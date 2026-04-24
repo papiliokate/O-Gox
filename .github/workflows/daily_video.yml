@@ -39,7 +39,7 @@ jobs:
           echo "Elected Repo ID: $ELECTION"
           
           # OGox is ID 3
-          if [ "$ELECTION" -ne 3 ]; then
+          if [ "$ELECTION" -ne 3 ] && [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
             echo "Not elected for this slot. Exiting gracefully."
             echo "proceed=false" >> $GITHUB_OUTPUT
             exit 0
