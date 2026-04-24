@@ -1,0 +1,33 @@
+name: Daily Puzzle Generation
+
+on:
+  schedule:
+    - cron: '30 11 * * *' # Run slightly before the video generator
+  workflow_dispatch:
+
+jobs:
+  generate-puzzle:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Generate Puzzle JSON
+        run: node scripts/generate_puzzle.js
+
+      - name: Commit Puzzle Data
+        run: |
+          git config --global user.name "Oops-Games Bot"
+          git config --global user.email "bot@oops-games.com"
+          git add public/daily_puzzle.json
+          git commit -m "Automated daily puzzle generation [skip ci]" || echo "No changes to commit"
+          git push origin main

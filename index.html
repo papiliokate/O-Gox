@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>O-Gox</title>
+  </head>
+  <body>
+    <div id="game-container">
+      <header>
+        <h1>O-Gox</h1>
+        <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;">Daily Puzzle Game</p>
+      </header>
+      <canvas id="gameCanvas"></canvas>
+      <div id="spelling-board"></div>
+      
+      <!-- Standardized Win Screen -->
+      <div id="win-modal" class="hidden">
+        <div class="modal-content glassmorphic">
+          <h2>You Win!</h2>
+          <p id="vic-cypher"></p>
+          <button id="btn-add-device">📲 Add to Device</button>
+          <button id="btn-share">📤 Brag and get free puzzles</button>
+          <button id="btn-binge">🎟️ Binge Puzzles ($0.99)</button>
+          <button id="btn-hub">🎮 Go to Games Hub</button>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

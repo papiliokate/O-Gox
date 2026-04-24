@@ -1,0 +1,102 @@
+name: Daily Video Generation
+
+on:
+  schedule:
+    - cron: '45 11 * * *'
+    - cron: '45 19 * * *'
+    - cron: '45 22 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-video:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Decentralized Election
+        id: election
+        run: |
+          ELECTION=$(node -e "
+            const crypto = require('crypto');
+            const d = new Date();
+            const dateStr = d.toISOString().split('T')[0];
+            const h = d.getUTCHours();
+            let slot = 'slot3';
+            if (h >= 11 && h < 14) slot = 'slot1';
+            else if (h >= 19 && h < 22) slot = 'slot2';
+            const seed = dateStr + '-' + slot;
+            const hash = crypto.createHash('md5').update(seed).digest('hex');
+            console.log(parseInt(hash.substring(0, 8), 16) % 4);
+          ")
+          echo "Elected Repo ID: $ELECTION"
+          
+          # OGox is ID 3
+          if [ "$ELECTION" -ne 3 ]; then
+            echo "Not elected for this slot. Exiting gracefully."
+            echo "proceed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "proceed=true" >> $GITHUB_OUTPUT
+          
+          FORMATS=("standard" "fail" "interactive" "standard")
+          SELECTED_FORMAT=${FORMATS[$(( $RANDOM % 4 ))]}
+          echo "Selected Format: $SELECTED_FORMAT"
+          echo "FORMAT=$SELECTED_FORMAT" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        if: steps.election.outputs.proceed == 'true'
+        run: |
+          npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+          
+      - name: Install Puppeteer System Libraries
+        if: steps.election.outputs.proceed == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev xvfb ffmpeg
+          npx puppeteer browsers install chrome
+
+      - name: Generate Video
+        if: steps.election.outputs.proceed == 'true'
+        run: xvfb-run --auto-servernum --server-args="-screen 0 720x1280x24" node scripts/generate_video.js
+        env:
+          HEADLESS: "false"
+
+      - name: Build Application
+        if: steps.election.outputs.proceed == 'true'
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting
+        if: steps.election.outputs.proceed == 'true'
+        run: npx firebase-tools deploy --only hosting:o-gox --project go-rabbit-4af82 --token "${{ secrets.FIREBASE_TOKEN }}"
+
+      - name: Ping Zapier Webhook
+        if: steps.election.outputs.proceed == 'true'
+        run: |
+          CAPTIONS=(
+            "Can you spell today's animal before the rings spin too fast? 🐯 Play free at oops-games-hub.web.app"
+            "Only 5% of players can get a perfect score! Test your aim at oops-games-hub.web.app 🎯"
+            "Today's O-Gox Challenge! 🧠 Can you figure it out? Play free at oops-games-hub.web.app"
+          )
+          YOUTUBE_TITLES=(
+            "Can You Spell Today's Animal? (#Shorts)"
+            "Fastest Way To Solve O-Gox (#Puzzle)"
+            "Daily Animal Spelling Puzzle (#Gaming)"
+          )
+          R_INDEX=$(( $RANDOM % 3 ))
+          CAPTION="${CAPTIONS[$R_INDEX]} #OGox #DailyPuzzle #WordGame #"$(date +'%Y%m%d')
+          YT_TITLE="${YOUTUBE_TITLES[$R_INDEX]}"
+          TS=$(date +'%s')
+          
+          curl --fail --silent --show-error -X POST -H "Content-Type: application/json" \
+          -d "{\"video_url\": \"https://o-gox.web.app/daily_video.mp4?t=$TS\", \"text\": \"$CAPTION\", \"youtube_title\": \"$YT_TITLE\", \"target_channel\": \"all\"}" \
+          https://hooks.zapier.com/hooks/catch/27231889/ujm5mjh/ || exit 1
+          
+          echo "Deployed public video and pinged Zapier!"
