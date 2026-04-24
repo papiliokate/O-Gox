@@ -10,9 +10,27 @@
       <header>
         <h1>O-Gox</h1>
         <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;">Daily Puzzle Game</p>
+        <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+          <button id="btn-tutorial" style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 20px; color: white; font-weight: bold; cursor: none;">❓ Tutorial</button>
+        </div>
       </header>
       <canvas id="gameCanvas"></canvas>
       <div id="spelling-board"></div>
+      <!-- Tutorial Modal -->
+      <div id="tutorial-modal" class="hidden" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(8px);">
+        <div class="modal-content" style="text-align: left;">
+          <h2 style="text-align: center; color: #00f0ff;">How to Play</h2>
+          <p style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 20px; color: white;">
+            <strong>1.</strong> Aim your neon arrow.<br>
+            <strong>2.</strong> Click to shoot through the gaps.<br>
+            <strong>3.</strong> Spell the animal's name in order to win.<br>
+            <strong>4.</strong> <em>Beware:</em> Shooting out of order scores no points, and hitting the center emoji clears your board!
+          </p>
+          <div style="display: flex; justify-content: center;">
+            <button id="btn-close-tutorial" style="background: linear-gradient(135deg, #00f0ff, #0055ff); cursor: none;">Got it!</button>
+          </div>
+        </div>
+      </div>
       
       <!-- Standardized Win Screen -->
       <div id="win-modal" class="hidden">

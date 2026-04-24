@@ -604,6 +604,14 @@ window.addEventListener('beforeinstallprompt', (e) => {
     deferredPrompt = e;
 });
 
+document.getElementById('btn-tutorial').addEventListener('click', () => {
+    document.getElementById('tutorial-modal').classList.remove('hidden');
+});
+
+document.getElementById('btn-close-tutorial').addEventListener('click', () => {
+    document.getElementById('tutorial-modal').classList.add('hidden');
+});
+
 document.getElementById('btn-add-device').addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'install_prompt_clicked');
     if (deferredPrompt) {
