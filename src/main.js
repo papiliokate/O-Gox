@@ -393,6 +393,7 @@ function checkWin() {
     playSound('win');
     document.getElementById('win-modal').classList.remove('hidden');
     document.getElementById('vic-cypher').textContent = getDailyCypher(3); // O-Gox is game 3
+    document.getElementById('vic-score').textContent = `Score: ${score}`;
     if (analytics) logEvent(analytics, 'level_complete', { level: 1 });
     
     confetti({
