@@ -30,4 +30,4 @@ jobs:
           git config --global user.email "bot@oops-games.com"
           git add public/daily_puzzle.json
           git commit -m "Automated daily puzzle generation [skip ci]" || echo "No changes to commit"
-          git push origin main
+          git push origin master
