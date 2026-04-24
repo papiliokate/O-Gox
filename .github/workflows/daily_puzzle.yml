@@ -2,7 +2,7 @@ name: Daily Puzzle Generation
 
 on:
   schedule:
-    - cron: '30 11 * * *' # Run slightly before the video generator
+    - cron: '35 10 * * *'
   workflow_dispatch:
 
 jobs:
@@ -33,3 +33,9 @@ jobs:
           git add public/daily_puzzle.json
           git commit -m "Automated daily puzzle generation [skip ci]" || echo "No changes to commit"
           git push origin master
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting
+        run: npx firebase-tools deploy --only hosting:o-gox --project go-rabbit-4af82 --token "${{ secrets.FIREBASE_TOKEN }}"
