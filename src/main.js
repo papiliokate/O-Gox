@@ -637,7 +637,7 @@ document.getElementById('btn-share').addEventListener('click', () => {
 
 document.getElementById('btn-binge').addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'binge_presale_click');
-    window.location.href = '/presale.html';
+    window.location.href = 'https://oops-games-hub.web.app/presale.html';
 });
 
 document.getElementById('btn-hub').addEventListener('click', () => {
