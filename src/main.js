@@ -165,7 +165,27 @@ const board = document.getElementById('spelling-board');
 
 function resizeCanvas() {
   const container = document.getElementById('game-container');
-  canvas.width = container.clientWidth;
+  
+  const LOGICAL_WIDTH = 450;
+  const LOGICAL_HEIGHT = 800; 
+
+  const scaleWidth = window.innerWidth / LOGICAL_WIDTH;
+  const scaleHeight = window.innerHeight / LOGICAL_HEIGHT;
+  const scale = Math.min(scaleWidth, scaleHeight);
+
+  container.style.width = `${LOGICAL_WIDTH}px`;
+  container.style.height = `${LOGICAL_HEIGHT}px`;
+  container.style.minHeight = `${LOGICAL_HEIGHT}px`;
+  container.style.transform = `scale(${scale})`;
+  container.style.transformOrigin = 'center center';
+  
+  container.style.position = 'absolute';
+  container.style.left = '50%';
+  container.style.top = '50%';
+  container.style.marginLeft = `-${LOGICAL_WIDTH / 2}px`;
+  container.style.marginTop = `-${LOGICAL_HEIGHT / 2}px`;
+
+  canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight; 
   drawBoard();
 }
@@ -223,8 +243,8 @@ async function initGame() {
 // --- Input Handling ---
 canvas.addEventListener('mousemove', (e) => {
   const rect = canvas.getBoundingClientRect();
-  mouse.x = e.clientX - rect.left;
-  mouse.y = e.clientY - rect.top;
+  mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+  mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
   
   if (arrow.shooting) return;
   const cx = canvas.width / 2;
@@ -233,6 +253,17 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('mousedown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+  mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+  
+  if (arrow.shooting) return;
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  arrow.angle = Math.atan2(mouse.y - cy, mouse.x - cx);
+});
+
+canvas.addEventListener('mouseup', (e) => {
   if (!arrow.shooting) {
     arrow.shooting = true;
     playSound('shoot');
@@ -245,29 +276,38 @@ canvas.addEventListener('mousedown', (e) => {
 
 // Touch support
 canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
-  mouse.x = touch.clientX - rect.left;
-  mouse.y = touch.clientY - rect.top;
+  mouse.x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+  mouse.y = (touch.clientY - rect.top) * (canvas.height / rect.height);
   
   if (arrow.shooting) return;
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
   arrow.angle = Math.atan2(mouse.y - cy, mouse.x - cx);
-});
+}, { passive: false });
+
 canvas.addEventListener('touchstart', (e) => {
-  // move arrow first
+  e.preventDefault();
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
-  mouse.x = touch.clientX - rect.left;
-  mouse.y = touch.clientY - rect.top;
+  mouse.x = (touch.clientX - rect.left) * (canvas.width / rect.width);
+  mouse.y = (touch.clientY - rect.top) * (canvas.height / rect.height);
+  
+  if (arrow.shooting) return;
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
   arrow.angle = Math.atan2(mouse.y - cy, mouse.x - cx);
-  
+}, { passive: false });
+
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
   if (!arrow.shooting) {
     arrow.shooting = true;
     playSound('shoot');
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
     arrow.x = cx + Math.cos(arrow.angle) * config.arrowRadius;
     arrow.y = cy + Math.sin(arrow.angle) * config.arrowRadius;
   }
@@ -362,8 +402,8 @@ function hitItem(item, ringIdx, slotIdx, bx, by) {
         
         // Calculate confetti origin based on canvas position
         const rect = canvas.getBoundingClientRect();
-        const originX = (rect.left + bx) / window.innerWidth;
-        const originY = (rect.top + by) / window.innerHeight;
+        const originX = (rect.left + bx * (rect.width / canvas.width)) / window.innerWidth;
+        const originY = (rect.top + by * (rect.height / canvas.height)) / window.innerHeight;
 
         // Fun particle pop
         confetti({
