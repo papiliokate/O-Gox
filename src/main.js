@@ -444,6 +444,32 @@ function checkWin() {
   if (spelledWord.join('') === targetWord.join('')) {
     // Win!
     playSound('win');
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const isCarousel = urlParams.get('carousel') === 'true';
+    
+    const regBtns = document.getElementById('regular-win-btns');
+    const carBtns = document.getElementById('carousel-btns');
+    
+    if (isCarousel) {
+        if (regBtns) regBtns.style.display = 'none';
+        if (carBtns) carBtns.style.display = 'flex';
+        
+        let playedGames = urlParams.get('played') ? urlParams.get('played').split(',').filter(Boolean) : [];
+        if (!playedGames.includes('OG')) playedGames.push('OG');
+        
+        const playNextBtn = document.getElementById('carousel-play-next');
+        const shareBtn = document.getElementById('carousel-share');
+        
+        if (playedGames.length >= 4) {
+            if (playNextBtn) playNextBtn.style.display = 'none';
+            if (shareBtn) shareBtn.style.display = 'block';
+        }
+    } else {
+        if (carBtns) carBtns.style.display = 'none';
+        if (regBtns) regBtns.style.display = 'flex';
+    }
+    
     document.getElementById('win-modal').classList.remove('hidden');
     document.getElementById('vic-cypher').textContent = getDailyCypher(3); // O-Gox is game 3
     document.getElementById('vic-score').textContent = `Score: ${score}`;
@@ -696,4 +722,48 @@ document.getElementById('btn-binge').addEventListener('click', () => {
 document.getElementById('btn-hub').addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'hub_clicked');
     window.location.href = 'https://oops-games-hub.web.app';
+});
+
+// Carousel Logic
+document.getElementById("carousel-play-next")?.addEventListener("click", () => {
+    let playedGames = new URLSearchParams(window.location.search).get('played') ? new URLSearchParams(window.location.search).get('played').split(',').filter(Boolean) : [];
+    if (!playedGames.includes('OG')) playedGames.push('OG');
+    const GAMES_LIST = [
+        { id: 'GR', url: 'https://go-rabbit-4af82.web.app' },
+        { id: 'SS', url: 'https://she-sells-sea-shells.web.app' },
+        { id: 'ST', url: 'https://smack-that-donkey.web.app' },
+        { id: 'OG', url: 'https://o-gox.web.app' }
+    ];
+    const unplayed = GAMES_LIST.filter(g => !playedGames.includes(g.id));
+    if (unplayed.length > 0) {
+        const nextGame = unplayed[Math.floor(Math.random() * unplayed.length)];
+        window.location.href = `${nextGame.url}?carousel=true&played=${playedGames.join(',')}`;
+    }
+});
+
+document.getElementById("carousel-binge")?.addEventListener("click", () => {
+    if (analytics) logEvent(analytics, 'binge_presale_click');
+    window.location.href = 'https://oops-games-hub.web.app/presale.html';
+});
+
+document.getElementById("carousel-share")?.addEventListener("click", () => {
+    const text = "I rode the carousel at oops-games.";
+    const GAMES_LIST = [
+        { id: 'GR', url: 'https://go-rabbit-4af82.web.app' },
+        { id: 'SS', url: 'https://she-sells-sea-shells.web.app' },
+        { id: 'ST', url: 'https://smack-that-donkey.web.app' },
+        { id: 'OG', url: 'https://o-gox.web.app' }
+    ];
+    if (navigator.share) {
+        navigator.share({ title: 'Oops-Games Carousel', text }).then(() => {
+            const nextGame = GAMES_LIST[Math.floor(Math.random() * GAMES_LIST.length)];
+            window.location.href = `${nextGame.url}?carousel=true&played=`;
+        }).catch(e => console.warn(e));
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied to clipboard!");
+            const nextGame = GAMES_LIST[Math.floor(Math.random() * GAMES_LIST.length)];
+            window.location.href = `${nextGame.url}?carousel=true&played=`;
+        });
+    }
 });

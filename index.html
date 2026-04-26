@@ -41,10 +41,17 @@
         <h2>You Win!</h2>
         <p id="vic-score" style="font-size: 1.5rem; font-weight: bold; color: #ff007f; margin: 10px 0;">Score: 0</p>
         <p id="vic-cypher"></p>
-        <button id="btn-add-device">📲 Add to Device</button>
-        <button id="btn-share">📤 Brag and get free puzzles</button>
-        <button id="btn-binge">🎟️ Binge Puzzles ($0.99)</button>
-        <button id="btn-hub">🎮 Go to Games Hub</button>
+        <div id="regular-win-btns" style="display:flex; flex-direction:column; gap:10px;">
+          <button id="btn-add-device">📲 Add to Device</button>
+          <button id="btn-share">📤 Brag and get free puzzles</button>
+          <button id="btn-binge">🎟️ Binge Puzzles ($0.99)</button>
+          <button id="btn-hub">🎮 Go to Games Hub</button>
+        </div>
+        <div id="carousel-btns" style="display:none; flex-direction:column; gap:10px;">
+          <button id="carousel-play-next" style="background: linear-gradient(135deg, #00f0ff, #0055ff); cursor: none;">➡️ Play the next game</button>
+          <button id="carousel-share" style="background: linear-gradient(135deg, #00f0ff, #0055ff); cursor: none; display:none;">📤 Share for another ride</button>
+          <button id="carousel-binge" style="background: linear-gradient(135deg, #ff007f 0%, #ff5500 100%); cursor: none;">🎟️ Binge this game</button>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.js"></script>
