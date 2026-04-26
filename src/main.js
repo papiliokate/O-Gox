@@ -482,7 +482,6 @@ function checkWin() {
     });
 
     // Auto-play hook
-    const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('autoplay')) {
         setTimeout(() => { window._VIDEO_RECORDING_DONE = true; }, 1000);
     }
