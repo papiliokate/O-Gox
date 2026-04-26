@@ -5,7 +5,7 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Outfit', sans-serif;
-  touch-action: none;
+  /* Removed global touch-action: none to allow scroll when needed */
 }
 
 body {
@@ -17,7 +17,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain; /* Enable native pull-to-refresh when at top */
+  touch-action: pan-y;
 }
 
 @keyframes gradientBG {
@@ -63,6 +67,7 @@ canvas {
   min-height: 0;
   cursor: none;
   z-index: 5;
+  touch-action: none; /* Keep game canvas non-scrollable */
 }
 
 #spelling-board {

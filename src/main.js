@@ -169,9 +169,12 @@ function resizeCanvas() {
   const LOGICAL_WIDTH = 450;
   const LOGICAL_HEIGHT = 800; 
 
-  const scaleWidth = window.innerWidth / LOGICAL_WIDTH;
-  const scaleHeight = window.innerHeight / LOGICAL_HEIGHT;
-  const scale = Math.min(scaleWidth, scaleHeight);
+  const width = document.documentElement.clientWidth || window.innerWidth;
+  const height = document.documentElement.clientHeight || window.innerHeight;
+
+  const scaleWidth = width / LOGICAL_WIDTH;
+  const scaleHeight = height / LOGICAL_HEIGHT;
+  const scale = Math.min(scaleWidth, scaleHeight) * 0.98; // 98% prevents edge-case scrollbar triggering
 
   container.style.width = `${LOGICAL_WIDTH}px`;
   container.style.height = `${LOGICAL_HEIGHT}px`;
@@ -241,7 +244,12 @@ async function initGame() {
 }
 
 // --- Input Handling ---
-canvas.addEventListener('mousemove', (e) => {
+const ignoreInput = (e) => {
+  return e.target.closest('.modal-content') || e.target.closest('header') || e.target.tagName === 'BUTTON';
+};
+
+window.addEventListener('mousemove', (e) => {
+  if (ignoreInput(e)) return;
   const rect = canvas.getBoundingClientRect();
   mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
   mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
@@ -252,7 +260,8 @@ canvas.addEventListener('mousemove', (e) => {
   arrow.angle = Math.atan2(mouse.y - cy, mouse.x - cx);
 });
 
-canvas.addEventListener('mousedown', (e) => {
+window.addEventListener('mousedown', (e) => {
+  if (ignoreInput(e)) return;
   const rect = canvas.getBoundingClientRect();
   mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
   mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
@@ -263,7 +272,8 @@ canvas.addEventListener('mousedown', (e) => {
   arrow.angle = Math.atan2(mouse.y - cy, mouse.x - cx);
 });
 
-canvas.addEventListener('mouseup', (e) => {
+window.addEventListener('mouseup', (e) => {
+  if (ignoreInput(e)) return;
   if (!arrow.shooting) {
     arrow.shooting = true;
     playSound('shoot');
@@ -275,7 +285,8 @@ canvas.addEventListener('mouseup', (e) => {
 });
 
 // Touch support
-canvas.addEventListener('touchmove', (e) => {
+window.addEventListener('touchmove', (e) => {
+  if (ignoreInput(e)) return;
   e.preventDefault();
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
@@ -288,7 +299,8 @@ canvas.addEventListener('touchmove', (e) => {
   arrow.angle = Math.atan2(mouse.y - cy, mouse.x - cx);
 }, { passive: false });
 
-canvas.addEventListener('touchstart', (e) => {
+window.addEventListener('touchstart', (e) => {
+  if (ignoreInput(e)) return;
   e.preventDefault();
   const rect = canvas.getBoundingClientRect();
   const touch = e.touches[0];
@@ -301,7 +313,8 @@ canvas.addEventListener('touchstart', (e) => {
   arrow.angle = Math.atan2(mouse.y - cy, mouse.x - cx);
 }, { passive: false });
 
-canvas.addEventListener('touchend', (e) => {
+window.addEventListener('touchend', (e) => {
+  if (ignoreInput(e)) return;
   e.preventDefault();
   if (!arrow.shooting) {
     arrow.shooting = true;
