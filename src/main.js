@@ -197,7 +197,7 @@ window.addEventListener('resize', resizeCanvas);
 // --- Initialization ---
 async function initGame() {
   try {
-    const res = await fetch('/daily_puzzle.json');
+    const res = await fetch('/daily_puzzle.json?v=' + Date.now());
     const data = await res.json();
     config.animalName = data.animalName;
     config.emoji = data.emoji;
@@ -730,6 +730,7 @@ document.getElementById('btn-hub').addEventListener('click', () => {
 // Carousel Logic
 const urlParams = new URLSearchParams(window.location.search);
 const isCarousel = urlParams.get('carousel') === 'true';
+if (isCarousel && typeof analytics !== 'undefined' && analytics) { logEvent(analytics, 'carousel_visit', { game_id: 'OG' }); }
 const playedGamesStr = urlParams.get('played') || '';
 
 if (urlParams.get('mockPurchase') === 'true') {
