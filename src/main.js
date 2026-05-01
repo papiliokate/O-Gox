@@ -197,7 +197,7 @@ window.addEventListener('resize', resizeCanvas);
 // --- Initialization ---
 async function initGame() {
   try {
-    const res = await fetch('/daily_puzzle.json?v=' + Date.now());
+    const res = await fetch(import.meta.env.BASE_URL + 'daily_puzzle.json?v=' + Date.now());
     const data = await res.json();
     config.animalName = data.animalName;
     config.emoji = data.emoji;
@@ -447,12 +447,21 @@ function checkWin() {
     
     const urlParams = new URLSearchParams(window.location.search);
     const isCarousel = urlParams.get('carousel') === 'true';
+    const isEmbed = urlParams.get('mode') === 'embed';
     
     const regBtns = document.getElementById('regular-win-btns');
     const carBtns = document.getElementById('carousel-btns');
+    const embedBtns = document.getElementById('embed-btns');
     
-    if (isCarousel) {
+    if (isEmbed) {
         if (regBtns) regBtns.style.display = 'none';
+        if (carBtns) carBtns.style.display = 'none';
+        if (embedBtns) embedBtns.style.display = 'flex';
+        document.querySelector('#win-modal h2').innerHTML = 'Level 1 Complete!';
+        document.getElementById('vic-cypher').style.display = 'none';
+    } else if (isCarousel) {
+        if (regBtns) regBtns.style.display = 'none';
+        if (embedBtns) embedBtns.style.display = 'none';
         if (carBtns) carBtns.style.display = 'flex';
         
         let playedGames = urlParams.get('played') ? urlParams.get('played').split(',').filter(Boolean) : [];
@@ -471,6 +480,7 @@ function checkWin() {
             }).catch(console.warn);
     } else {
         if (carBtns) carBtns.style.display = 'none';
+        if (embedBtns) embedBtns.style.display = 'none';
         if (regBtns) regBtns.style.display = 'flex';
     }
     
@@ -725,6 +735,11 @@ document.getElementById('btn-binge').addEventListener('click', () => {
 document.getElementById('btn-hub').addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'hub_clicked');
     window.location.href = 'https://oops-games-hub.web.app';
+});
+
+document.getElementById('btn-embed-hook')?.addEventListener('click', () => {
+    if (analytics) logEvent(analytics, 'embed_hook_clicked');
+    window.open('https://oops-games-hub.web.app/', '_blank');
 });
 
 // Carousel Logic
