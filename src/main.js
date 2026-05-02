@@ -196,15 +196,26 @@ window.addEventListener('resize', resizeCanvas);
 
 // --- Initialization ---
 async function initGame() {
-  try {
-    const res = await fetch(import.meta.env.BASE_URL + 'daily_puzzle.json?v=' + Date.now());
-    const data = await res.json();
-    config.animalName = data.animalName;
-    config.emoji = data.emoji;
-    targetWord = config.animalName.split('');
-  } catch (e) {
-    console.warn("Failed to load daily_puzzle.json, using defaults.");
-  }
+  const validAnimals = [
+      { name: "CAT", emoji: "🐱" }, { name: "DOG", emoji: "🐶" },
+      { name: "MOUSE", emoji: "🐭" }, { name: "RABBIT", emoji: "🐰" },
+      { name: "FOX", emoji: "🦊" }, { name: "BEAR", emoji: "🐻" },
+      { name: "PANDA", emoji: "🐼" }, { name: "KOALA", emoji: "🐨" },
+      { name: "TIGER", emoji: "🐯" }, { name: "LION", emoji: "🦁" },
+      { name: "COW", emoji: "🐮" }, { name: "PIG", emoji: "🐷" },
+      { name: "FROG", emoji: "🐸" }, { name: "MONKEY", emoji: "🐵" }
+  ];
+  
+  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Pacific/Kiritimati', year: 'numeric', month: '2-digit', day: '2-digit' });
+  const dateStr = formatter.format(new Date());
+  let seed = getSeed(dateStr);
+  let rand = mulberry32(seed);
+  
+  const selectedAnimal = validAnimals[Math.floor(rand() * validAnimals.length)];
+  
+  config.animalName = selectedAnimal.name;
+  config.emoji = selectedAnimal.emoji;
+  targetWord = config.animalName.split('');
 
   // Pack the board heavily so there are plenty of targets
   let pool = [];
