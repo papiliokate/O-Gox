@@ -4,6 +4,46 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebas
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-analytics.js";
 
 // --- Audio Synthesizer ---
+const urlParams = new URLSearchParams(window.location.search);
+
+if (urlParams.get('autoplay') === 'split') {
+    const asmrFile = urlParams.get('asmr');
+    if (asmrFile) {
+        const vid = document.createElement('video');
+        vid.src = `/asmr/${asmrFile}`;
+        vid.autoplay = true;
+        vid.loop = true;
+        vid.muted = true;
+        vid.style.position = 'absolute';
+        vid.style.bottom = '0';
+        vid.style.left = '0';
+        vid.style.width = '100%';
+        vid.style.height = '50%';
+        vid.style.objectFit = 'cover';
+        document.body.appendChild(vid);
+    }
+    
+    const banner = document.createElement('div');
+    banner.innerText = "O-Gox from Oops-games";
+    banner.style.position = 'absolute';
+    banner.style.top = '50%';
+    banner.style.left = '50%';
+    banner.style.transform = 'translate(-50%, -50%)';
+    banner.style.background = 'rgba(0, 0, 0, 0.85)';
+    banner.style.color = '#fde047';
+    banner.style.padding = '12px 24px';
+    banner.style.borderRadius = '12px';
+    banner.style.border = '2px solid #b45309';
+    banner.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+    banner.style.fontWeight = '800';
+    banner.style.fontSize = '28px';
+    banner.style.zIndex = '1000';
+    banner.style.whiteSpace = 'nowrap';
+    banner.style.boxShadow = '0 4px 15px rgba(0,0,0,0.5)';
+    banner.style.textShadow = '1px 1px 2px rgba(0,0,0,0.8)';
+    document.body.appendChild(banner);
+}
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const playSound = (type) => {
   if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -172,8 +212,13 @@ function resizeCanvas() {
   const width = document.documentElement.clientWidth || window.innerWidth;
   const height = document.documentElement.clientHeight || window.innerHeight;
 
+  let effectiveHeight = height;
+  if (urlParams.get('autoplay') === 'split') {
+      effectiveHeight = height / 2;
+  }
+
   const scaleWidth = width / LOGICAL_WIDTH;
-  const scaleHeight = height / LOGICAL_HEIGHT;
+  const scaleHeight = effectiveHeight / LOGICAL_HEIGHT;
   const scale = Math.min(scaleWidth, scaleHeight) * 0.98; // 98% prevents edge-case scrollbar triggering
 
   container.style.width = `${LOGICAL_WIDTH}px`;
@@ -184,7 +229,11 @@ function resizeCanvas() {
   
   container.style.position = 'absolute';
   container.style.left = '50%';
-  container.style.top = '50%';
+  if (urlParams.get('autoplay') === 'split') {
+      container.style.top = '25%';
+  } else {
+      container.style.top = '50%';
+  }
   container.style.marginLeft = `-${LOGICAL_WIDTH / 2}px`;
   container.style.marginTop = `-${LOGICAL_HEIGHT / 2}px`;
 
@@ -456,7 +505,6 @@ function checkWin() {
     // Win!
     playSound('win');
     
-    const urlParams = new URLSearchParams(window.location.search);
     const isCarousel = urlParams.get('carousel') === 'true';
     const isEmbed = urlParams.get('mode') === 'embed';
     
@@ -754,7 +802,6 @@ document.getElementById('btn-embed-hook')?.addEventListener('click', () => {
 });
 
 // Carousel Logic
-const urlParams = new URLSearchParams(window.location.search);
 const isCarousel = urlParams.get('carousel') === 'true';
 if (isCarousel && typeof analytics !== 'undefined' && analytics) { logEvent(analytics, 'carousel_visit', { game_id: 'OG' }); }
 const playedGamesStr = urlParams.get('played') || '';
@@ -797,6 +844,69 @@ const advanceCarousel = async (isAnotherRide = false) => {
         window.location.href = 'https://oops-games-hub.web.app/';
     }
 };
+
+// Autoplay for Video Gen
+async function autoPlayLogic(mode) {
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+    await sleep(1000);
+    
+    const isSplit = mode === 'split';
+    const speedMultiplier = isSplit ? 3 : 1;
+    const delay = 2000 / speedMultiplier;
+    
+    while(spelledWord.length < targetWord.length) {
+        if (window._VIDEO_RECORDING_DONE) break;
+        
+        let targetLetter = targetWord[spelledWord.length];
+        let found = null;
+        for(let r=0; r<rings.length; r++){
+            for(let s=0; s<rings[r].slots.length; s++){
+                if(rings[r].slots[s] === targetLetter){
+                    found = {r, s}; break;
+                }
+            }
+            if(found) break;
+        }
+        
+        if (found) {
+            let ring = rings[found.r];
+            let angle = ring.currentRotation + (found.s * (Math.PI * 2) / ring.numSlots);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            let bx = cx + Math.cos(angle) * ring.radius;
+            let by = cy + Math.sin(angle) * ring.radius;
+            
+            mouse.x = bx;
+            mouse.y = by;
+            
+            await sleep(delay / 2);
+            
+            // To hit a moving target perfectly, we cheat slightly and aim a bit ahead
+            angle = ring.currentRotation + (found.s * (Math.PI * 2) / ring.numSlots) + (ring.speed * ring.direction * 150);
+            bx = cx + Math.cos(angle) * ring.radius;
+            by = cy + Math.sin(angle) * ring.radius;
+            
+            arrow.angle = Math.atan2(by - cy, bx - cx);
+            if (!arrow.shooting) {
+                arrow.shooting = true;
+                playSound('shoot');
+                arrow.x = cx + Math.cos(arrow.angle) * config.arrowRadius;
+                arrow.y = cy + Math.sin(arrow.angle) * config.arrowRadius;
+            }
+            
+            while(arrow.shooting) {
+                await sleep(50);
+            }
+            await sleep(delay / 2);
+        } else {
+            break;
+        }
+    }
+}
+
+if (urlParams.get('autoplay')) {
+    autoPlayLogic(urlParams.get('autoplay'));
+}
 
 document.getElementById("carousel-play-next")?.addEventListener("click", () => advanceCarousel(false));
 document.getElementById("header-carousel-next")?.addEventListener("click", () => advanceCarousel(false));

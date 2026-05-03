@@ -20,7 +20,7 @@ jobs:
           cache: 'npm'
       - name: Randomize Video Format
         run: |
-          FORMATS=("standard" "fail" "interactive" "standard")
+          FORMATS=("standard" "fail" "interactive" "split")
           SELECTED_FORMAT=${FORMATS[$(( $RANDOM % 4 ))]}
           echo "Selected Format: $SELECTED_FORMAT"
           echo "FORMAT=$SELECTED_FORMAT" >> $GITHUB_ENV
