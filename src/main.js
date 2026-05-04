@@ -125,6 +125,17 @@ if (import.meta.env && import.meta.env.VITE_FIREBASE_API_KEY) {
   }
 }
 
+let publisherDomain = 'unknown';
+if (document.referrer) {
+    try {
+        publisherDomain = new URL(document.referrer).hostname;
+    } catch(e) {}
+}
+
+if (urlParams.get('mode') === 'embed' && typeof analytics !== 'undefined') {
+    logEvent(analytics, 'embed_visit', { publisher_domain: publisherDomain });
+}
+
 // --- Meta-Cipher System ---
 function mulberry32(a) {
   return function() {
@@ -546,7 +557,11 @@ function checkWin() {
     document.getElementById('win-modal').classList.remove('hidden');
     document.getElementById('vic-cypher').textContent = getDailyCypher(3); // O-Gox is game 3
     document.getElementById('vic-score').textContent = `Score: ${score}`;
-    if (analytics) logEvent(analytics, 'level_complete', { level: 1 });
+    if (analytics) {
+        let eventParams = { level: 1 };
+        if (urlParams.get('mode') === 'embed') eventParams.publisher_domain = publisherDomain;
+        logEvent(analytics, 'level_complete', eventParams);
+    }
     
     confetti({
         particleCount: 150,
