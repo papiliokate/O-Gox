@@ -257,13 +257,34 @@ window.addEventListener('resize', resizeCanvas);
 // --- Initialization ---
 async function initGame() {
   const validAnimals = [
+      // Original list
       { name: "CAT", emoji: "🐱" }, { name: "DOG", emoji: "🐶" },
       { name: "MOUSE", emoji: "🐭" }, { name: "RABBIT", emoji: "🐰" },
       { name: "FOX", emoji: "🦊" }, { name: "BEAR", emoji: "🐻" },
       { name: "PANDA", emoji: "🐼" }, { name: "KOALA", emoji: "🐨" },
       { name: "TIGER", emoji: "🐯" }, { name: "LION", emoji: "🦁" },
       { name: "COW", emoji: "🐮" }, { name: "PIG", emoji: "🐷" },
-      { name: "FROG", emoji: "🐸" }, { name: "MONKEY", emoji: "🐵" }
+      { name: "FROG", emoji: "🐸" }, { name: "MONKEY", emoji: "🐵" },
+      
+      // New additions for more variety
+      { name: "WOLF", emoji: "🐺" }, { name: "DEER", emoji: "🦌" },
+      { name: "ZEBRA", emoji: "🦓" }, { name: "HORSE", emoji: "🐴" },
+      { name: "SHEEP", emoji: "🐑" }, { name: "GOAT", emoji: "🐐" },
+      { name: "CAMEL", emoji: "🐫" }, { name: "RHINO", emoji: "🦏" },
+      { name: "HIPPO", emoji: "🦛" }, { name: "SLOTH", emoji: "🦥" },
+      { name: "SKUNK", emoji: "🦨" }, { name: "BADGER", emoji: "🦡" },
+      { name: "OTTER", emoji: "🦦" }, { name: "BEAVER", emoji: "🦫" },
+      { name: "DUCK", emoji: "🦆" }, { name: "SWAN", emoji: "🦢" },
+      { name: "OWL", emoji: "🦉" }, { name: "EAGLE", emoji: "🦅" },
+      { name: "PARROT", emoji: "🦜" }, { name: "TURTLE", emoji: "🐢" },
+      { name: "SNAKE", emoji: "🐍" }, { name: "LIZARD", emoji: "🦎" },
+      { name: "WHALE", emoji: "🐋" }, { name: "DOLPHIN", emoji: "🐬" },
+      { name: "SEAL", emoji: "🦭" }, { name: "FISH", emoji: "🐟" },
+      { name: "SHARK", emoji: "🦈" }, { name: "OCTOPUS", emoji: "🐙" },
+      { name: "CRAB", emoji: "🦀" }, { name: "SQUID", emoji: "🦑" },
+      { name: "SNAIL", emoji: "🐌" }, { name: "BUG", emoji: "🐛" },
+      { name: "ANT", emoji: "🐜" }, { name: "BEE", emoji: "🐝" },
+      { name: "SPIDER", emoji: "🕷️" }
   ];
   
   const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Pacific/Kiritimati', year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -540,7 +561,7 @@ function checkWin() {
         const playNextBtn = document.getElementById('carousel-play-next');
         const shareBtn = document.getElementById('carousel-share');
         
-        fetch('https://oops-games-hub.web.app/carousel_config.json')
+        fetch('https://oops-games.com/carousel_config.json')
             .then(res => res.json())
             .then(configList => {
                 if (playedGames.length >= configList.length) {
@@ -803,17 +824,17 @@ document.getElementById('btn-share').addEventListener('click', () => {
 
 document.getElementById('btn-binge').addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'binge_presale_click');
-    window.location.href = 'https://oops-games-hub.web.app/presale.html';
+    window.location.href = 'https://oops-games.com/presale.html';
 });
 
 document.getElementById('btn-hub').addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'hub_clicked');
-    window.location.href = 'https://oops-games-hub.web.app';
+    window.location.href = 'https://oops-games.com';
 });
 
 document.getElementById('btn-embed-hook')?.addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'embed_hook_clicked');
-    window.open('https://oops-games-hub.web.app/', '_blank');
+    window.open('https://oops-games.com/', '_blank');
 });
 
 // Carousel Logic
@@ -846,17 +867,17 @@ const advanceCarousel = async (isAnotherRide = false) => {
     }
     
     try {
-        const res = await fetch('https://oops-games-hub.web.app/carousel_config.json');
+        const res = await fetch('https://oops-games.com/carousel_config.json');
         const configList = await res.json();
         const unplayed = configList.filter(g => !currentPlayed.includes(g.id));
         if (unplayed.length > 0) {
             const nextGame = unplayed[Math.floor(Math.random() * unplayed.length)];
             window.location.href = `${nextGame.url}?carousel=true&played=${currentPlayed.join(',')}`;
         } else {
-            window.location.href = 'https://oops-games-hub.web.app/';
+            window.location.href = 'https://oops-games.com/';
         }
     } catch(e) {
-        window.location.href = 'https://oops-games-hub.web.app/';
+        window.location.href = 'https://oops-games.com/';
     }
 };
 
@@ -930,7 +951,7 @@ document.getElementById("carousel-binge")?.addEventListener("click", () => {
     if (analytics) logEvent(analytics, 'binge_presale_click');
     let playedGames = playedGamesStr ? playedGamesStr.split(',').filter(Boolean) : [];
     if (!playedGames.includes('OG')) playedGames.push('OG');
-    window.location.href = 'https://oops-games-hub.web.app/presale.html?carousel=true&played=' + playedGames.join(',') + '&returnUrl=' + encodeURIComponent(window.location.href);
+    window.location.href = 'https://oops-games.com/presale.html?carousel=true&played=' + playedGames.join(',') + '&returnUrl=' + encodeURIComponent(window.location.href);
 });
 
 document.getElementById("carousel-share")?.addEventListener("click", async () => {
