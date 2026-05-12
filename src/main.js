@@ -528,7 +528,7 @@ function checkWin() {
     // Win!
     playSound('win');
     
-    const isCarousel = urlParams.get('carousel') === 'true';
+    const isCarousel = false;
     
     const regBtns = document.getElementById('regular-win-btns');
     const carBtns = document.getElementById('carousel-btns');
@@ -815,7 +815,7 @@ document.getElementById('btn-hub').addEventListener('click', () => {
 
 
 // Carousel Logic
-const isCarousel = urlParams.get('carousel') === 'true';
+const isCarousel = false;
 if (isCarousel && typeof analytics !== 'undefined' && analytics) { logEvent(analytics, 'carousel_visit', { game_id: 'OG' }); }
 const playedGamesStr = urlParams.get('played') || '';
 
