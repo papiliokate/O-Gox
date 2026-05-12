@@ -4,13 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>O-Gox - Shoot the Letter Puzzle Game | Oops-Games</title>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('mode') === 'captcha' || params.get('mode') === 'embed' || params.get('client_id')) {
-        window.location.replace('./conversion.html' + window.location.search);
-    }
-  </script>
-
     <meta name="description" content="Play O-Gox, a strategic twist on the classic tic-tac-toe logic puzzle. Free to play instantly in your browser." />
   </head>
   <body>
@@ -20,7 +13,7 @@
         <p style="color: rgba(255,255,255,0.6); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;">Daily Puzzle Game</p>
         <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
           <button id="btn-tutorial" style="background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 20px; color: white; font-weight: bold; cursor: none;">❓ Tutorial</button>
-          <button id="header-carousel-next" style="pointer-events: auto !important; display: none; background: linear-gradient(135deg, #00f0ff, #0055ff); border: none; padding: 8px 16px; border-radius: 20px; color: white; font-weight: bold; cursor: none;">➡️ Next Game</button>
+          <button id="header-carousel-next" style="display: none; background: linear-gradient(135deg, #00f0ff, #0055ff); border: none; padding: 8px 16px; border-radius: 20px; color: white; font-weight: bold; cursor: none;">➡️ Next Game</button>
         </div>
       </header>
       <canvas id="gameCanvas"></canvas>
@@ -69,6 +62,5 @@
     </div>
     <script type="module" src="/src/main.js"></script>
     <script src="/streak_manager.js"></script>
-  <script src="/carousel_manager.js"></script>
 </body>
 </html>
