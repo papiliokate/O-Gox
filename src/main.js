@@ -125,16 +125,7 @@ if (import.meta.env && import.meta.env.VITE_FIREBASE_API_KEY) {
   }
 }
 
-let publisherDomain = 'unknown';
-if (document.referrer) {
-    try {
-        publisherDomain = new URL(document.referrer).hostname;
-    } catch(e) {}
-}
 
-if (urlParams.get('mode') === 'embed' && typeof analytics !== 'undefined') {
-    logEvent(analytics, 'embed_visit', { publisher_domain: publisherDomain });
-}
 
 // --- Meta-Cipher System ---
 function mulberry32(a) {
@@ -538,21 +529,12 @@ function checkWin() {
     playSound('win');
     
     const isCarousel = urlParams.get('carousel') === 'true';
-    const isEmbed = urlParams.get('mode') === 'embed';
     
     const regBtns = document.getElementById('regular-win-btns');
     const carBtns = document.getElementById('carousel-btns');
-    const embedBtns = document.getElementById('embed-btns');
     
-    if (isEmbed) {
+    if (isCarousel) {
         if (regBtns) regBtns.style.display = 'none';
-        if (carBtns) carBtns.style.display = 'none';
-        if (embedBtns) embedBtns.style.display = 'flex';
-        document.querySelector('#win-modal h2').innerHTML = 'Level 1 Complete!';
-        document.getElementById('vic-cypher').style.display = 'none';
-    } else if (isCarousel) {
-        if (regBtns) regBtns.style.display = 'none';
-        if (embedBtns) embedBtns.style.display = 'none';
         if (carBtns) carBtns.style.display = 'flex';
         
         let playedGames = urlParams.get('played') ? urlParams.get('played').split(',').filter(Boolean) : [];
@@ -571,7 +553,6 @@ function checkWin() {
             }).catch(console.warn);
     } else {
         if (carBtns) carBtns.style.display = 'none';
-        if (embedBtns) embedBtns.style.display = 'none';
         if (regBtns) regBtns.style.display = 'flex';
     }
     
@@ -580,7 +561,6 @@ function checkWin() {
     document.getElementById('vic-score').textContent = `Score: ${score}`;
     if (analytics) {
         let eventParams = { level: 1 };
-        if (urlParams.get('mode') === 'embed') eventParams.publisher_domain = publisherDomain;
         logEvent(analytics, 'level_complete', eventParams);
     }
     
@@ -832,10 +812,7 @@ document.getElementById('btn-hub').addEventListener('click', () => {
     window.location.href = 'https://oops-games.com';
 });
 
-document.getElementById('btn-embed-hook')?.addEventListener('click', () => {
-    if (analytics) logEvent(analytics, 'embed_hook_clicked');
-    window.open('https://oops-games.com/', '_blank');
-});
+
 
 // Carousel Logic
 const isCarousel = urlParams.get('carousel') === 'true';
