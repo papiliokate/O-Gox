@@ -772,15 +772,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
     deferredPrompt = e;
 });
 
-document.getElementById('btn-tutorial').addEventListener('click', () => {
+document.getElementById('btn-tutorial')?.addEventListener('click', () => {
     document.getElementById('tutorial-modal').classList.remove('hidden');
 });
 
-document.getElementById('btn-close-tutorial').addEventListener('click', () => {
+document.getElementById('btn-close-tutorial')?.addEventListener('click', () => {
     document.getElementById('tutorial-modal').classList.add('hidden');
 });
 
-document.getElementById('btn-add-device').addEventListener('click', () => {
+document.getElementById('btn-add-device')?.addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'install_prompt_clicked');
     if (deferredPrompt) {
         deferredPrompt.prompt();
@@ -790,7 +790,7 @@ document.getElementById('btn-add-device').addEventListener('click', () => {
     }
 });
 
-document.getElementById('btn-share').addEventListener('click', () => {
+document.getElementById('btn-share')?.addEventListener('click', () => {
     const text = `🐯 O-Gox\nI scored ${score} points!\n\nPlay free at https://o-gox.web.app`;
     if (navigator.share) {
         navigator.share({ title: 'O-Gox', text: text }).catch(console.error);
@@ -802,12 +802,12 @@ document.getElementById('btn-share').addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'brag_clicked');
 });
 
-document.getElementById('btn-binge').addEventListener('click', () => {
+document.getElementById('btn-binge')?.addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'binge_presale_click');
     window.location.href = 'https://oops-games.com/presale.html';
 });
 
-document.getElementById('btn-hub').addEventListener('click', () => {
+document.getElementById('btn-hub')?.addEventListener('click', () => {
     if (analytics) logEvent(analytics, 'hub_clicked');
     window.location.href = 'https://oops-games.com';
 });
